@@ -1,0 +1,40 @@
+---
+#this first name is optional but best practice to define your play.
+- name: This sets up an httpd webserver
+  hosts: webservers:dbservers
+  tasks:
+    - name: create admin accounts
+      user:
+       name: "{{ item }}
+       state: present
+       group: "wheel"
+      loop:
+        - webadmin
+        - dbadmin
+    - name: getfacts
+      debug: 
+        msg: "{{ansible_all_ipv4_addresses}} is the IP address of {{ansible_hostname}}"
+    - name: ping
+      ping:
+    - name: show hostname
+      command: hostname
+    - name: Install apache packages
+      yum:
+        name: httpd,php
+        state: present
+        update_cache: true
+    - name: ensure httpd is running
+      service:
+        name: httpd
+        state: started
+    - name: "my website"
+      copy:
+        scr:  {{ item }}
+        dest: /var/www/
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes 
+      loop: 
+        - /var/www/html
+
