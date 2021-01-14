@@ -1,11 +1,11 @@
 ---
 #this first name is optional but best practice to define your play.
 - name: This sets up an httpd webserver
-  hosts: webservers:dbservers
+  hosts: prod
   tasks:
     - name: create admin accounts
       user:
-       name: "{{ item }}
+       name: "{{ item }}"
        state: present
        group: "wheel"
       loop:
@@ -20,16 +20,17 @@
       command: hostname
     - name: Install apache packages
       yum:
-        name: httpd,php
+        name: httpd, php
         state: present
         update_cache: true
-    - name: ensure httpd is running
+    - name: start apache service 
       service:
         name: httpd
         state: started
-    - name: "my website"
+        enabled: yes 
+    - name: Copy using inline content
       copy:
-        scr:  {{ item }}
+        src:  "{{ item }}"
         dest: /var/www/
         owner: root
         group: root
@@ -37,4 +38,4 @@
         backup: yes 
       loop: 
         - /var/www/html
-
+        - /var/www/index.php
